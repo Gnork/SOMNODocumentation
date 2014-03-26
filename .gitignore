@@ -1,9 +1,9 @@
-crbm.pdf
-crbm.aux
-crbm.blg
-crbm.out
-crbm.synctex.gz
-crbm.log
-crbm.bbl
-crbm.dvi
+somno.pdf
+*.aux
+*.blg
+*.out
+*.synctex.gz
+*.log
+*.bbl
+*.dvi
 *~
