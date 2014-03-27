@@ -1,6 +1,6 @@
 \section{Methods}\label{methods}
 
-TODO
+In this section the underlying concepts and technologies are described. It starts with a brief description of XNAT and OpenStack. For further information about these systems and how they are integrated in the platform see~\cite{wu14}. The section continues with introducing the concept of workflows, the functionalities of WS-PGRADE/gUSE and the DCI-Bridge, which is an important part of gUSE. The last subsection describes a sample application, which has been used throughout the project.
 
 \subsection{XNAT}\label{xnat}
 
@@ -12,16 +12,39 @@ TODO
 
 \subsection{Workflows}\label{workflows}
 
-TODO
+Applications consist of executable programs.
+They usually take input, which can be in the form of command-line parameters or files and produce output files.
+Some programs depend on the output of other programs, so that a mechanism is needed to ensure that all required inputs have been produced successfully before the program runs.
+The workflow itself is a description or recipe how to link the executables together and are often stored in xml formats.
+In terms of a workflow, every program is described as job, which can consist of one executable file or as in gUSE can be a zip file containing several files.
+Every job has input and output ports, where each port has a number to identify it.
+There can only be one file assigned to each port, which is then used to execute the program.
+Every output port of one job can be linked to an input port of another program.
+A system like gUSE that implements workflows ensures that the all necessary inputs are available before the job is started.
+The produced data is then transported to the expected location where next job can see it.
+When a job fails, it can resume this single job after the problem has been fixed.
+There is no need to process all the successfully finished jobs again.
+One of the most important feature of the ports is the support of naming conventions.
+An input file assigned to a port is renamed, so that the program can find it in the storage.
+The program also produces files that are named in a special way.
+This name must be specified for the output port, so that the workflow system can keep track of the produced files.
+Different jobs that have linked outputs and inputs can follow different naming conventions.
 
 \subsection{WS-PGRADE/gUSE}\label{guse}
 
-TODO
+Grid and cloud User Support Environment (gUSE) is an opensource workflow management system developed at the Laboratory of Parallel and Distributed Systems in Hungaria.
+WS-PGRADE is built on top of gUSE and is a collection of several Java Enterprise applications that are combined to form a full featured e-science portal.
+It provides a user-interface based on the opensource portal software liferay.
+
 
 \subsection{DCI-Bridge}\label{dci}
 
 TODO
 
-\subsection{Applications}\label{applications}
+\subsection{Sample Applications}\label{applications}
+
+TODO
+
+\subsection{Workflow Repositories}\label{repositories}
 
 TODO
