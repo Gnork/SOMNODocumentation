@@ -1,2 +1,49 @@
 \section{Results}\label{results}
+
 TODO
+
+\subsection{Improvements}\label{improvements}
+
+Can have multiple dependent jobs/algorithms
+
+reusing VMs - closes after some time
+
+\subsection{Problems}\label{problems}
+
+unecessary data copying - not using same VM for followup jobs
+
+no error handling
+
+no or only few information in interface, if problem related to cloud, not application
+
+only few information in log files
+
+manual resume not always helping
+
+sometimes workflows not startable, need to restart gUSE often - unstable
+
+\subsection{Testing}\label{testing}
+
+starting different tests under different conditions
+
+works with reliable cloud
+
+but not when cloud is busy and may fail
+
+problems with handing data from one job to another with parameter sweep (works with only one job)
+
+\subsection{Missing functionality}\label{missing}
+
+working Remote API
+
+Visualization of running VMs
+
+Information about errors in interface and/or error documentation
+
+more options for controlling the cloud resources
+
+need to restart gUSE when changing stuff
+
+userfriendly interface
+
+option to use the system without the web interface

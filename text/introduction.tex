@@ -1,5 +1,25 @@
 \section{Introduction}\label{introduction}
-TODO
 
-\textit{Previous work:}
-TODO
+In sleep research large amounts of patient data are collected during sleep studies, also called polysomnographies.
+In the course of the SOMNO.Netz project~\cite{krefting13} a data archiving and processing infrastructure is provided, to manage the data of 300 sleep laboratories.
+The infrastructure is based on XNAT as an archiving tool for medical data and an OpenStack cloud for scalable data processing.
+This architecture has been introduced by Wu et al.~\cite{wu14} in the scope of the QM-ROCT project for medical image data, but is also suitable for biosignal processing like electrocardiography scans in sleep research.
+The processing itself is done by Matlab algorithms executed on virtual machines in the cloud. These VMs can be launched and shut down on demand.
+The current system architecture relies on various shell scripts, controlling the procedure and connect to the resources using REST calls.
+This is a lightweight solution, which provides a fast and straight forward process, but lacks in error handling and a more sophisticated resource management.
+Especially algorithms depending on the output of a previous analysis are not yet supported.
+
+In a collaboration with researchers from the ER-flow project at the AMC Amsterdam, we introduce the workflow management system WS-PGRADE/gUSE to the server architecture. This system has been used for grid-based science gateways, as developed by Shahand et al.~\cite{shahand13}, successfully.
+This paper evaluates the usage of WS-PGRADE/gUSE in cloud-based architectures and the improvements that should be achieved for the platform as follows:
+
+\begin{itemize}
+\item Limiting the access to cloud resources
+\item Optimizing the usage of limited cloud resources
+\item Error handling and troubleshooting for unexpected cloud problems
+\item Reliability of WS-PGRADE/gUSE in combination with the cloud
+\item Responsiveness under high load
+\item Overhead added by WS-PGRADE/gUSE
+\item Starting workflows automatically via command-line interfaces
+\item Can the system be used in productive environments?
+\item Are workflows valuable for the platform?
+\end{itemize}
