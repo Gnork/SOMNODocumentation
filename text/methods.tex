@@ -64,7 +64,14 @@ Failed workflows can be resumed after the problem has been solved.
 
 \subsection{DCI-Bridge}\label{dci}
 
-TODO
+The DCI-Bridge is part of gUSE and connects the workflow system with different types of Distributed Computing Infrastructures (DCI).
+These middlewares are for example grid or cloud infrastructures, where applications can be executed.
+The DCI-Bridge is a generic interface receiving requests from the workflow system.
+Different DCI plugins handle these request for different infrastructure types.
+To connect a cloud infrastructure the DCI-Bridge provides a CloudBroker and a EC2 plugin.
+Cloudbroker is an external service which is used to connect to a cloud.
+As the SOMNO.Netz server architecture is encapsulated in a private network, which can not be reached from outside, this is not a suitable option.
+Instead the EC2 plugin is being used, which connects to the cloud directly by talking to the EC2 interface of OpenStack (see section~\ref{openstack}), using the opensource command-line software euca-tools.
 
 \subsection{Sample Applications}\label{applications}
 
