@@ -33,8 +33,33 @@ Different jobs that have linked outputs and inputs can follow different naming c
 \subsection{WS-PGRADE/gUSE}\label{guse}
 
 Grid and cloud User Support Environment (gUSE) is an opensource workflow management system developed at the Laboratory of Parallel and Distributed Systems in Hungaria.
-WS-PGRADE is built on top of gUSE and is a collection of several Java Enterprise applications that are combined to form a full featured e-science portal.
-It provides a user-interface based on the opensource portal software liferay.
+WS-PGRADE is a collection of several gUSE Java Enterprise services that are combined to form a full featured e-science portal.
+It provides a user-interface based on the opensource portal software Liferay.
+
+The web portal is used to create and manage workflows. In order to create a new workflow three steps necessary. First a graph is created using a Java Applet named graph editor, which is provided on the portal. With the graph editor new jobs can be created and their ports can be connected (see section~\ref{workflows}). Figure~\ref{fig:grapheditor} shows a graph in the editor. The jobs are symbolized by yellow squares. Input ports are green, while output ports are gray. The arrows symbolize connections.
+The graph is used to create a concrete workflow instance, which in the last step has to be configured.
+The concrete workflows are shown in the user interface as can be seen in figure~\ref{fig:interfaceworkflows}.
+During the configuration the executable programs and necessary command-line parameters are assigned to each job and input files are uploaded and assigned to the ports.
+Also predefined middlewares can be selected, which define the platform to execute the workflows (see section~\ref{dci}).
+The finalized workflow is then submitted to be executed.
+The details button shows the status of the submitted workflows, wether they are running, finished or failed with an error.
+Once a workflow is finished the resulting files, defined by the output ports can be downloaded as a .zip file.
+Failed workflows can be resumed after the problem has been solved.
+
+
+\begin{figure*}%[!b]
+                \centering
+                \includegraphics[width=1.0\columnwidth]{images/graph-editor.png}
+                \caption{Graph editor of WS-PGRADE}
+                \label{fig:grapheditor}
+\end{figure*}
+
+\begin{figure*}%[!b]
+                \centering
+                \includegraphics[width=2.0\columnwidth]{images/interface-workflows.png}
+                \caption{List of concrete workflows in the web portal}
+                \label{fig:interfaceworkflows}
+\end{figure*}
 
 
 \subsection{DCI-Bridge}\label{dci}
