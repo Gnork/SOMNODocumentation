@@ -46,6 +46,10 @@ The details button shows the status of the submitted workflows, wether they are 
 Once a workflow is finished the resulting files, defined by the output ports can be downloaded as a .zip file.
 Failed workflows can be resumed after the problem has been solved.
 
+In order to control workflows automatically gUSE provides two different APIs.
+The Application-Specific Module API (ASM) provides access to gUSE functionality for Java developers.
+For remote server calls a Rest API is provided. It can be used for basic workflow controls like starting, stopping, resuming and gathering status information.
+The latter is more suitable for the loose coupling of the given QM-ROCT server infrastructure (see section~\ref{architecture}), because the functionality to call the API can be implemented on another server and not inside the gUse Java environment.
 
 \begin{figure*}%[!b]
                 \centering
@@ -72,11 +76,38 @@ To connect a cloud infrastructure the DCI-Bridge provides a CloudBroker and a EC
 Cloudbroker is an external service which is used to connect to a cloud.
 As the SOMNO.Netz server architecture is encapsulated in a private network, which can not be reached from outside, this is not a suitable option.
 Instead the EC2 plugin is being used, which connects to the cloud directly by talking to the EC2 interface of OpenStack (see section~\ref{openstack}), using the opensource command-line software euca-tools.
+The plugin is able to orchestrate the cloud resources, like starting and stopping VMs whenever they are needed.
+It will start a new VM when a workflow is submitted and process the data in the cloud.
+The VM is not being shut down immediately after it has been used.
+The system waits for more submits to reuse the same VM instance.
+Only if it has not been used for a certain time it is being terminated again.
+In the web interface the number of VM instances running at a time can be limited, to control the load of the cloud. 
+An image or snapshot, which is used to create the Virtual Machine, is also specified in the DCI settings.
+
+\subsection{Nova Client \& Euca Tools}\label{euca}
+Nova Client~\cite{nova} is a command line tool provided by OpenStack, to send control requests to an OpenStack control server. It communicates with the OpenStack standard remote API.
+
+Euca2ools~\cite{eucatools} is a python library and a set of command line tools provided by Eucalyptus Systems, to control a remote EC2 API of a cloud middleware like Amazon Elastic Compute Cloud (Amazon EC2)~\cite{amazon}.
+OpenStack also provides an EC2 API besides the Nova API.
+Euca2ools is used by the gUSE DCI-Bridge to create and terminate VM instances and therefore must be installed on the gUSE server.
 
 \subsection{Sample Applications}\label{applications}
 
-TODO
+The application CQRS~\cite{krefting10} processes polysomnographic electrocardiogram (PSG-ECG) data and is used as sample for modeling workflows throughout this project.
+The application consists of two Matlab algorithms, which are are executed using a shell script.
+To run the algorithms a Matlab Compiler Runtime (MCR) must be installed.
+The path of the MCR is given to the shell scripts as command-line parameter.
+Matlab files are not executed directly, but with a run script located in the same directory.
+The first algorithms takes an ECG data file (ecg.dat) and a header file (ecg.hea) as input and produces three different files (ecg\_fd1.dat, ecg\_af2.dat, ecg\_df2.dat) as output.
+All five files are given to the second algorithm as input parameters, which produces the final output file (ecg\_cqrs.dat).
+The original input files can be stored in XNAT (see section~\ref{xnat}) as scans files in a session.
+The output files are stored as assessment data in the same session as the scan files.
 
 \subsection{Workflow Repositories}\label{repositories}
 
-TODO
+Workflow repositories store given workflows with including their settings.
+gUSE provides a local repository, which can be reached from the portal user interface.
+It also supports exporting the workflow with the application binaries, input data and an XML description of the contained jobs and ports.
+
+In order to publish workflows a remote repository \cite{somnocqrs} provided by the SHIWA project can be used.
+gUSE provides a build-in upload functionality to connect to remote repositories.
