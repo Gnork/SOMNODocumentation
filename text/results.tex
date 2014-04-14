@@ -1,51 +1,87 @@
 \section{Results}\label{results}
 
-TODO
+This chapter describes how the gUSE architecture has been tested and what problems and improvements are resulting from it.
+Also a list of missing functionality for controlling and debugging cloud infrastructures with gUSE is given.
 
-\subsection{Improvements}\label{improvements}
+\subsection{Testing and Problems}\label{testing}
 
-Can have multiple dependent jobs/algorithms
+The workflow system has been tested with the developed CQRS workflows and different settings, while the maximum number of Virtual Machines was always limited to three VMs at a time.
+All tests have been started using the web interface, by submitting jobs one by one.
 
-reusing VMs - closes after some time
+As first attempt, ten workflows have been started with one input file each.
+This test succeeded without any problems.
 
-\subsection{Problems}\label{problems}
+The second test included parameter sweeps, with three input files in a .zip file and only one job submission.
+This test succeeded only with the CQRS workflow, which has only one job, instead of two.
+For the workflows with two jobs the procedure failed with the second job.
+The DCI-Bridge caused a download error, so that the results of the first job could not be transferred to the gUSE server.
+After modeling the workflows again from scratch, but by applying the same settings and after restarting the gUSE service the parameter sweep test succeeded.
+This kind of instability and non deterministic behavior has been observed throughout the work with gUSE.
 
-unecessary data copying - not using same VM for followup jobs
+The third test included one workflow submission with 100 input files in the parameter sweep .zip file.
+Also this test succeeded without any problems.
+When all Virtual Machines are running and busy, gUSE waits for the jobs to finish, before the next jobs in the queue are submitted.
+There are always 15 jobs in the state running, while there are only three jobs really executed at a time.
+The rest is in the state submitted.
+This labeling could be improved by having only the three jobs really being executed in the state running.
 
-no error handling
+The fourth test included ten submissions with ten files in parameter sweep each.
+This test succeeded like the third test and with the same behavior.
 
-no or only few information in interface, if problem related to cloud, not application
+During the tests the same three running VMs have been used over and over for the all jobs in line, which resulted in a fast execution time of about 15 seconds per job.
+Only the execution time for the first three jobs was longer, because the workflows system had to wait for the VM instances to boot up.
 
-only few information in log files
+Although the tests succeeded under laboratory conditions, when nothing else was blocking the cloud infrastructure, they often failed when the OpenStack cloud was busy.
+Overloading the cloud was relatively easy in the given test environment.
+In this case it could happen, that a Virtual Machine is not very responsive and even causing ssh connections to fail.
+gUSE does not handle any errors caused by the cloud, so that the workflow system lost track of Virtual Machines very often, without any chance of resuming the process by hand or automatically.
+Usually a restart of the gUSE service was necessary to restore a stable system state.
+gUSE is not able to resume broken connections to a VM.
 
-manual resume not always helping
+Also the Rest API, which is a crucial feature in order to start workflows from an XNAT pipeline, has been tested.
+The API worked without any problems for local workflow executions on the gUSE server.
+Unfortunately it did not work with DCI-Bridge cloud plugin, so that the behavior of the Rest API in combination with the cloud infrastructure could not be determined.
+This problem may be caused by a system bug or by a wrong configuration and should be investigated further in future work.
 
-sometimes workflows not startable, need to restart gUSE often - unstable
+\subsection{Usefulness and value of gUSE}\label{usefulness}
 
-Rest API Generally working, but not for cloud, not many control options, research build their own systems on top of java api, processing manager may be an alternative in the future, but adds more overhead
+By introducing gUSE to the QMROCT architecture, some new useful functionalities are available.
 
-\subsection{Testing}\label{testing}
+The most obvious is the introduction of workflows, which handle the inputs and outputs of multiple dependent jobs.
+Although the sample application used throughout the experiments does not need long processing time, it is important to keep a good scalability for more sophisticated workflows in mind.
+Having system which can resume failed jobs, without the need of running all previous jobs again, can increase the productivity.
+ 
+The second important feature is the handling of cloud resources, which is done by gUSE.
+With the functionality of the DCI-Bridge cloud plugin, cloud resources can be handled efficiently by reusing running VM instances for multiple jobs. It reduces the execution times caused by booting up new VMs.
 
-starting different tests under different conditions
+\subsection{Missing functionality and glitches}\label{missing}
 
-works with reliable cloud
+WS-PGRADE / gUSE lacks of some general and some cloud specific functionality, which could improve the efficiency of working with this system.
 
-but not when cloud is busy and may fail
+In general gUSE does not provide enough information about errors that occurred.
+Usually only Java exceptions can be found in the catalina.out logs of Apache Tomcat, but there is no documentation about these exception and what might have caused them.
+Also there is no information given in the user interface about any errors caused by gUSE itself.
+The only errors that can be handled by gUSE are caused by the executed applications.
+In the web interface the error logs can be downloaded and the error code of the application is given.
 
-problems with handing data from one job to another with parameter sweep (works with only one job)
+The web interface itself can not be considered as user friendly, because it is not following any conventions that can be found in other user interfaces.
+Changing settings in the DCI Bridge or in security settings are only applied after restarting gUSE or parts of the system.
+When settings of a workflow are changed, the new settings have to be saved within the browser separately for different tabs and afterwards the upload to the server has to be performed by the user.
+In the DCI-Bridge cloud settings checkboxes are used to display true/false values, where two different checkboxes represent the same settings and the label of the checkboxes change after applying new settings.
 
-\subsection{Missing functionality}\label{missing}
+Unfortunately it is not possible to install the system without the graphical user interface, but as lightweight command-line tool.
+This would be helpful in order to run the WS-PGRADE/gUSE service only as server backend.
 
-cloud debug -> snapshot
+In the current version of gUSE the cloud plugin seems to be only a porting of the grid functionality with out any specific interface or data model.
 
-Visualization of running VMs
+During the implementation of the different workflows it turned out, that reducing the data transfers can only be done, by reducing the number of jobs and by managing data download and upload in the application.
+This means that the improvements given by the workflow system can not be used anymore.
+Instead of transferring the data back to the centralized gUSE server, it would be more suitable to transfer the data directly between the Virtual Machine.
+Also dependent followup jobs should be executed on the same Virtual Machine if possible, so that there is no data transfer necessary.
 
-Information about errors in interface and/or error documentation
-
-more options for controlling the cloud resources
-
-need to restart gUSE when changing stuff
-
-userfriendly interface
-
-option to use the system without the web interface
+To debug and control the cloud integration it is necessary to get as many real time information as possible.
+A great feature would be a visualization of running and used Virtual Machines.
+Also the number of jobs waiting in line to be executed should be visible and which Virtual Machine they are assigned to.
+Right now this information is not visible by clicking on every single job, which displays the IP address of the used cloud instance.
+gUSE always shuts down Virtual Machines after a certain time, even if there has been a problem with the application or gUSE.
+An option to not shut down these VMs could be very handy for debugging.

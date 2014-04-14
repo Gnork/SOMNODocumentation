@@ -60,14 +60,58 @@ The value of the variable \textit{EC2\_ACCESS\_KEY} maps to the user field and \
 With the given information gUSE is able to run euca2ools commands in order to create and terminate VM instances and to determine the IP address of a running VM.
 A problem that occurred with euca2ools, the EC2 interface and the cloud configuration in the private network, is the wrong assignment of public IP addresses.
 The public IP address, that got assigned was not reachable inside the network and therefore not usable.
-This is probably a bug with the EC2 API of OpenStack or a wrong command sent by euca2ools.
-The solution to this problem were customized start and terminate scripts \cite{customscripts} which use Nova tools~\ref{euca} instead of the EC2 API.
+The solution to this problem are customized start and terminate scripts \cite{customscripts} which use Nova tools(see section~\ref{euca}) instead of the EC2 API.
 These customized scripts replace the programs \textit{euca-run-instances} and \textit{euca-terminate-instances} in the directory \textit{/usr/bin} of the gUSE server.
+The start script manually assigns a floating IP to the VM instance, instead of using the automatic public IP assignment of OpenStack.
 
 \subsection{Workflows}\label{workflowimplementation}
 
-How to create
+The sample application described in section~\ref{applications} is used to model workflows in the WS-PGRADE web interface.
+The basic workflow \cite{somnocqrs} describes the two algorithms FD1\_AF2\_DF2 and CQRS as two seperated jobs (see figure~\ref{fig:CQRSworkflow}).
+The FD1\_AF2\_DF2 job has two input ports, which describe the ecg.hea and ecg.dat files, which are used by the algorithm.
+The job has five output ports, which are connected to the input ports of the CQRS job.
+These five ports handle the data transfer between both jobs for the two original files ecg.hea and ecg.dat, as well as for three newly created files ecg\_fd1.dat, ecg\_af2.dat and ecg\_df2.dat.
+The CQRS job has one output port, which describes the final output file cqrs.dat produced by the algorithm.
 
-Alternative solutions
+The input files must be given to the workflow management system before the processing starts.
+This means that the data files must be transferred to the gUSE server, for example by automatically downloading them from XNAT.
+The workflow manager transfers the data to a Virtual Machine and processes the algorithm.
+All five output files are transferred back to the gUSE server and then copied to a another VM to process the second job.
+Also the final result file needs to be transferred back to the gUSE server.
+In order to reduce the number of file transfers, the workflow can be modeled in different ways.
 
-Workflows: \cite{somnocqrs} \cite{somnocqrsdl} \cite{somnocqrsone}
+Instead of handling the input and output files with the workflow manager, the results can be downloaded from XNAT directly to the Virtual Machine where the processing takes place.
+For this purpose a download script has been written, which is included with the algorithm scripts and binaries.
+The CQRS download workflow~\cite{somnocqrsdl}, as can be seen in figure~\ref{fig:CQRSDLworkflow}, has only one input port.
+This input port takes a text file including download parameters, which are used to connect to the XNAT server for downloading the actual input files.
+The output ports of the first job include the same five files as the basic workflow.
+The sixth output port additionally transfers the parameter file to the second job.
+When the second job is processed, the result file is not being handled by gUSE, but gets uploaded to XNAT.
+
+This system reduces the number of file transfers, but the outputs of the first job are still transferred to the gUSE server and then to the VM of the second job.
+When gUSE should not handle file transfers at all, both algorithms can be modeled as one job~\cite{somnocqrsone} (see figure~\ref{fig:CQRSONEworkflow}).
+This workflow includes both algorithms and takes only one input, a parameter file.
+The only file transfers are the download from XNAT and the upload of the result file.
+Unfortunately the main benefit of the workflow system is lost, because the intermediate results are not stored by gUSE and both algorithms must be processed again, if something fails.
+But for small algorithms with a short processing time, this kind of workflow modeling can still be a better option, because the file transfers take longer then the processing itself.
+
+\begin{figure*}%[!b]
+                \centering
+                \includegraphics[width=1.0\columnwidth]{images/SOMNO_CQRS.png}
+                \caption{SOMNO CQRS workflow}
+                \label{fig:CQRSworkflow}
+\end{figure*}
+
+\begin{figure*}%[!b]
+                \centering
+                \includegraphics[width=0.8\columnwidth]{images/SOMNO_CQRS_DL_SAMPLE.png}
+                \caption{SOMNO CQRS workflow with XNAT data download}
+                \label{fig:CQRSDLworkflow}
+\end{figure*}
+
+\begin{figure*}%[!b]
+                \centering
+                \includegraphics[width=0.3\columnwidth]{images/SOMNO_CQRS_ONE_SAMPLE.png}
+                \caption{SOMNO CQRS workflow with XNAT data download and only one job}
+                \label{fig:CQRSONEworkflow}
+\end{figure*}

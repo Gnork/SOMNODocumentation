@@ -16,12 +16,13 @@ Applications consist of executable programs.
 They usually take input, which can be in the form of command-line parameters or files and produce output files.
 Some programs depend on the output of other programs, so that a mechanism is needed to ensure that all required inputs have been produced successfully before the program runs.
 The workflow itself is a description or recipe how to link the executables together and are often stored in xml formats.
-In terms of a workflow, every program is described as job, which can consist of one executable file or as in gUSE can be a zip file containing several files.
+
+In terms of a workflow, every program is described as job, which can consist of one executable file or as in gUSE can be a .zip file containing several files.
 Every job has input and output ports, where each port has a number to identify it.
 There can only be one file assigned to each port, which is then used to execute the program.
 Every output port of one job can be linked to an input port of another program.
-A system like gUSE that implements workflows ensures that the all necessary inputs are available before the job is started.
-The produced data is then transported to the expected location where next job can see it.
+A system like gUSE, which implements workflows, ensures that the all necessary inputs are available before the job is started.
+The produced data is then transported to the expected location where the next job can use it.
 When a job fails, it can resume this single job after the problem has been fixed.
 There is no need to process all the successfully finished jobs again.
 One of the most important feature of the ports is the support of naming conventions.
@@ -29,6 +30,11 @@ An input file assigned to a port is renamed, so that the program can find it in 
 The program also produces files that are named in a special way.
 This name must be specified for the output port, so that the workflow system can keep track of the produced files.
 Different jobs that have linked outputs and inputs can follow different naming conventions.
+
+The input files can be given to input ports one by one or by using parameters sweeps.
+Parameter sweeps include several input files in one .zip file, so that they are uploaded at once and are then processed in a row.
+When there are several input ports, the inputs of the different ports can be combined linearly by matching the first input of the first port with the first input of the second port and the second input of the first port with the second input of the second port.
+Another method combines the inputs like a cross product, so that also the first input of the first port is combined with the second input of the second port and vice versa.
 
 \subsection{WS-PGRADE/gUSE}\label{guse}
 
@@ -46,11 +52,6 @@ The details button shows the status of the submitted workflows, wether they are 
 Once a workflow is finished the resulting files, defined by the output ports can be downloaded as a .zip file.
 Failed workflows can be resumed after the problem has been solved.
 
-In order to control workflows automatically gUSE provides two different APIs.
-The Application-Specific Module API (ASM) provides access to gUSE functionality for Java developers.
-For remote server calls a Rest API is provided. It can be used for basic workflow controls like starting, stopping, resuming and gathering status information.
-The latter is more suitable for the loose coupling of the given QM-ROCT server infrastructure (see section~\ref{architecture}), because the functionality to call the API can be implemented on another server and not inside the gUse Java environment.
-
 \begin{figure*}%[!b]
                 \centering
                 \includegraphics[width=1.0\columnwidth]{images/graph-editor.png}
@@ -65,6 +66,10 @@ The latter is more suitable for the loose coupling of the given QM-ROCT server i
                 \label{fig:interfaceworkflows}
 \end{figure*}
 
+In order to control workflows automatically gUSE provides two different APIs.
+The Application-Specific Module API (ASM) provides access to gUSE functionality for Java developers.
+For remote server calls a Rest API is provided. It can be used for basic workflow controls like starting, stopping, resuming and gathering status information.
+The latter is more suitable for the loose coupling of the given QM-ROCT server infrastructure (see section~\ref{architecture}), because the functionality to call the API can be implemented on another server and not inside the gUse Java environment.
 
 \subsection{DCI-Bridge}\label{dci}
 
@@ -83,6 +88,10 @@ The system waits for more submits to reuse the same VM instance.
 Only if it has not been used for a certain time it is being terminated again.
 In the web interface the number of VM instances running at a time can be limited, to control the load of the cloud. 
 An image or snapshot, which is used to create the Virtual Machine, is also specified in the DCI settings.
+The Virtual Machine image itself must have a Slave DCI-Bridge tool installed.
+This tool runs a web server and receives the jobs with the data and executables from the server side DCI-Bridge.
+It executes the jobs and sends the results back to gUSE.
+A VM image with a properly configured Slave DCI-Bridge can be downloaded~\cite{slavedci}.
 
 \subsection{Nova Client \& Euca Tools}\label{euca}
 Nova Client~\cite{nova} is a command line tool provided by OpenStack, to send control requests to an OpenStack control server. It communicates with the OpenStack standard remote API.
