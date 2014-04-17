@@ -4,20 +4,49 @@ In this section the underlying concepts and technologies are described. It start
 
 \subsection{XNAT}\label{xnat}
 
-TODO
+The Extensible Neuroimaging Archive Toolkit (XNAT)~\cite{marcus_extensible_2007} is an opensource archiving software for medical scan data developed by the Neuroinformatics Research Group of the Washingston University in St.Louis.
+XNAT provides a graphical user interface to upload and manage scan data.
+
+The main data structures of XNAT are \textit{Projects}, which limit the data access rights of different users.
+Each project contains \textit{Subjects} describing the personal data of patients.
+Every experiment with a patient is stored as \textit{Session} of the corresponding Subject.
+
+A new Session for ECG data~\ref{applications} can be created in the web interface of XNAT under \textit{New, Experiment, ECG Session}.
+The results of data processing algorithms should be stored in the same session as the original experiment data.
+In XNAT special data types called \textit{Assessors} exist to store these results.
+
+XNAT also provides a pipeline system, to start data processings from the web interface or automatically whenever a new scan has been uploaded.
+The pipeline can execute custom shell scripts and other programs and gives various parameters to the executed program.
+These parameters, \textit{Project, Subject, Session, User, Password} and \textit{Host}, are later used by a data processing script to connect to the XNAT API for downloading and uploading scans and results.
+
+In order to perform these actions remotely from the command-line, the corresponding commands used in the workflow implementations~\ref{workflowimplementation} are described in appendix~\ref{xnatapi}.
 
 \subsection{OpenStack}\label{openstack}
 
-TODO
+OpenStack is a opensource cloud infrastructure software~\cite{openstackhome} provided by the OpenStack Foundation.
+With the help of OpenStack an Infrastructure as a Service (IaaS) cloud architecture can be created.
+It is used to provide Virtual Machines with limited virtual resources like virtual CPUs, harddrive space and memory.
+As user of a VM the underlying physical resources cannot be seen.
+Using IaaS it is easy to scale up the virtual resources for higher workloads whenever they are needed.
+A Virtual Machine is always booted from an existing harddrive image.
+OpenStack can create snapshots, capturing the current state of a VM.
+New VMs can also be based on snapshots instead of the original image.
+
+The main infrastructure consists of a Control Node server, a Network Node and several Compute Nodes.
+The Control Node can receive various commands, like starting and stopping Virtual Machines, through its Rest APIs (see section~\ref{euca}).
+The Network Node manages the public and private IP addresses of the VMs.
+In the QMROCT server architecture~\ref{architecture} so called Floating IPs from an IP pool should be assigned to the Virtual Machines to access them within the private network.
+The Compute Nodes run the actual Virtual Machines and provide their resources and compute power for this purpose.
+In order to scale up the resources new Compute Nodes can be attached to the network.
 
 \subsection{Workflows}\label{workflows}
 
 Applications consist of executable programs.
-They usually take input, which can be in the form of command-line parameters or files and produce output files.
+They usually take input in the form of command-line parameters or files and produce output files.
 Some programs depend on the output of other programs, so that a mechanism is needed to ensure that all required inputs have been produced successfully before the program runs.
 The workflow itself is a description or recipe how to link the executables together and are often stored in xml formats.
 
-In terms of a workflow, every program is described as job, which can consist of one executable file or as in gUSE can be a .zip file containing several files.
+In terms of a workflow, every program is described as job, which can consist of one executable file or, as in gUSE, can be a .zip file containing a set of executable files.
 Every job has input and output ports, where each port has a number to identify it.
 There can only be one file assigned to each port, which is then used to execute the program.
 Every output port of one job can be linked to an input port of another program.
@@ -42,14 +71,14 @@ Grid and cloud User Support Environment (gUSE) is an opensource workflow managem
 WS-PGRADE is a collection of several gUSE Java Enterprise services that are combined to form a full featured e-science portal.
 It provides a user-interface based on the opensource portal software Liferay.
 
-The web portal is used to create and manage workflows. In order to create a new workflow three steps necessary. First a graph is created using a Java Applet named graph editor, which is provided on the portal. With the graph editor new jobs can be created and their ports can be connected (see section~\ref{workflows}). Figure~\ref{fig:grapheditor} shows a graph in the editor. The jobs are symbolized by yellow squares. Input ports are green, while output ports are gray. The arrows symbolize connections.
+The web portal is used to create and manage workflows. In order to create a new workflow three steps are necessary. First a graph is created using a Java Applet named graph editor, which is provided on the portal. With the graph editor new jobs can be created and their ports can be connected (see section~\ref{workflows}). Figure~\ref{fig:grapheditor} shows a graph in the editor. The jobs are symbolized by yellow squares. Input ports are green, while output ports are gray. The arrows symbolize connections.
 The graph is used to create a concrete workflow instance, which in the last step has to be configured.
 The concrete workflows are shown in the user interface as can be seen in figure~\ref{fig:interfaceworkflows}.
 During the configuration the executable programs and necessary command-line parameters are assigned to each job and input files are uploaded and assigned to the ports.
-Also predefined middlewares can be selected, which define the platform to execute the workflows (see section~\ref{dci}).
+Also previously configured middlewares can be selected, which define the platform to execute the workflows (see section~\ref{dci}).
 The finalized workflow is then submitted to be executed.
 The details button shows the status of the submitted workflows, wether they are running, finished or failed with an error.
-Once a workflow is finished the resulting files, defined by the output ports can be downloaded as a .zip file.
+Once a workflow is finished the resulting files, defined by the output ports, can be downloaded as a .zip file.
 Failed workflows can be resumed after the problem has been solved.
 
 \begin{figure*}%[!b]
@@ -77,10 +106,10 @@ The DCI-Bridge is part of gUSE and connects the workflow system with different t
 These middlewares are for example grid or cloud infrastructures, where applications can be executed.
 The DCI-Bridge is a generic interface receiving requests from the workflow system.
 Different DCI plugins handle these request for different infrastructure types.
-To connect a cloud infrastructure the DCI-Bridge provides a CloudBroker and a EC2 plugin.
-Cloudbroker is an external service which is used to connect to a cloud.
-As the SOMNO.Netz server architecture is encapsulated in a private network, which can not be reached from outside, this is not a suitable option.
-Instead the EC2 plugin is being used, which connects to the cloud directly by talking to the EC2 interface of OpenStack (see section~\ref{openstack}), using the opensource command-line software euca-tools.
+To connect to a cloud infrastructure the DCI-Bridge provides a CloudBroker and a EC2 plugin.
+CloudBroker is an external service which is used to connect to a cloud.
+Because the SOMNO.Netz server architecture is encapsulated in a private network, which can not be reached from outside, this is not a suitable option.
+Instead the EC2 plugin can be used, which connects to the cloud directly via the EC2 interface of OpenStack (see section~\ref{openstack}), using the opensource command-line software euca-tools (see section~\ref{euca}).
 The plugin is able to orchestrate the cloud resources, like starting and stopping VMs whenever they are needed.
 It will start a new VM when a workflow is submitted and process the data in the cloud.
 The VM is not being shut down immediately after it has been used.
@@ -109,12 +138,12 @@ The path of the MCR is given to the shell scripts as command-line parameter.
 Matlab files are not executed directly, but with a run script located in the same directory.
 The first algorithms takes an ECG data file (ecg.dat) and a header file (ecg.hea) as input and produces three different files (ecg\_fd1.dat, ecg\_af2.dat, ecg\_df2.dat) as output.
 All five files are given to the second algorithm as input parameters, which produces the final output file (ecg\_cqrs.dat).
-The original input files can be stored in XNAT (see section~\ref{xnat}) as scans files in a session.
+The original input files can be stored in XNAT (see section~\ref{xnat}) as scan files in a session.
 The output files are stored as assessment data in the same session as the scan files.
 
 \subsection{Workflow Repositories}\label{repositories}
 
-Workflow repositories store given workflows with including their settings.
+Workflow repositories store given workflows and their settings including the application executables.
 gUSE provides a local repository, which can be reached from the portal user interface.
 It also supports exporting the workflow with the application binaries, input data and an XML description of the contained jobs and ports.
 

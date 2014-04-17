@@ -1,15 +1,18 @@
 \section{Discussion}\label{discussion}
 
 WS-PGRADE/gUSE is a workflow management system, that has been used to execute applications in grid infrastructures successfully.
-By porting this functionality to a cloud infrastructure there arise new challenges for data and error handling.
+By porting this functionality to a cloud infrastructure new challenges arise for data and error handling.
 
-In the current state WS-PGRADE/gUSE has no cloud specific feature.
-The data model of copying files between gUSE server and the cloud infrastructure has not been adapted to improve the performance by reducing data transfers.
+In the current state WS-PGRADE/gUSE has no cloud specific features.
+The data model of sending files between gUSE server and the cloud infrastructure has not been adapted for cloud architectures.
+The performance could be improved significantly by reducing the amount of data transfers.
 For WS-PGRADE/gUSE the cloud is just another grid and the characteristics of cloud infrastructures are being ignored.
 
 Since gUSE is able to perform a lot of tasks by providing a complex workflow system it would be great to use it in the QMROCT/SOMNO.Netz data processing infrastructure.
-Unfortunately gUSE is only as stable as the underlying cloud and not able to handle any errors or delays caused by the cloud, which makes the whole system very unreliable.
-Also gUSE needs to be restarted very often, when something went wrong, in order restore a stable system.
+Unfortunately gUSE is only as stable as the underlying cloud and not able to handle any errors or delays caused by the cloud.
+Therefore the system becomes unreliable.
+Furthermore gUSE needs to be restarted as soon as unexpected errors occur.
+It is the only way of restoring a stable system environment.
 
-Due to this serious issues it is not possible to use WS-PGRADE/gUSE in a productive cloud environment right now.
-In order to improve the system, it is important to further investigate the given issues and to report back to the developers, which improvements are necessary before a productive usage is possible.
+Due to this serious issues it is not possible to use WS-PGRADE/gUSE for a productive cloud-based architecture right now.
+In order to improve the system, it is important to further investigate the given issues and to report back to the developers which improvements are necessary before a productive usage is possible.

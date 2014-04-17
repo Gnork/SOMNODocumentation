@@ -20,6 +20,10 @@
 % Lettrines
 \usepackage{lettrine}
 
+% Appendix
+%
+\usepackage[titletoc,title]{appendix}
+\usepackage[dotinlabels]{titletoc}
 
 % ------
 % Abstract
@@ -44,10 +48,24 @@
 	\fancyhead[C]{WS-PGRADE/gUSE for cloud $\bullet$ March 2014 $\bullet$ SOMNO.Netz/ER-flow collaboration}
 	\fancyfoot[RO,LE]{\thepage}
 
+% ------
+% Codeblock formatting
+
+\newenvironment{mylisting}
+{\begin{list}{}{\setlength{\leftmargin}{1em}}\item\scriptsize\bfseries}
+{\end{list}}
+
+\newenvironment{mytinylisting}
+{\begin{list}{}{\setlength{\leftmargin}{1em}}\item\tiny\bfseries}
+{\end{list}}
 
 % ------
 % Clickable URLs (optional)
 \usepackage{hyperref}
+
+% ------
+% For appendix name refs
+\usepackage{cleveref}
 
 
 \usepackage{graphicx,dblfloatfix}
@@ -101,5 +119,13 @@
 \bibliographystyle{plain}
 
 \end{multicols}
+
+\newpage
+\begin{subappendices}
+
+\appendix
+\input{appendix/xnatapi.tex}
+
+\end{subappendices}
 
 \end{document}

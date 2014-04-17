@@ -1,0 +1,46 @@
+\section{XNAT API Curl Commands} \label{xnatapi}
+
+Various curl commands are used to remotely access, upload and modify files using the XNAT Rest API.
+The most important commands, also used in the data processing scripts~\cite{customscripts}, are listed below:
+
+\begin{mylisting}
+\begin{verbatim}
+# create ecg scan data in existing project
+curl -X PUT -u ${user}:${pwd} "${host}/REST/projects/${project}/subjects/${subject}/experiments/${session}
+/scans/${scan_name}?xsiType=xnat:ecgScanData"
+
+# upload file to existing scan data
+curl -X PUT -u ${user}:${pwd} "${host}/REST/projects/${project}/subjects/${subject}/experiments/${session}
+/scans/${scan_name}/resources/OTHER/files/${file_name}
+?format=OTHER&content=T1_RAW&inbody=true" --data-binary @${local_file_path}
+
+# download scan information
+curl -O -u ${user}:${pwd} "${host}/REST/projects/${project}/subjects/${subject}/experiments/${session}
+/scans?format=csv"
+  
+# download scan file (download multiple scans by separating values with comma)
+curl -O -u ${user}:${pwd} "${host}/REST/projects/${project}/subjects/${subject}/experiments/${session}
+/scans/${scan_name}/resources/OTHER/files?format=zip"
+
+# create new assessor data
+curl -X PUT -u $user:$pwd "${host}/REST/projects/${project}/subjects/${subject}/experiments/${session}
+/assessors/${assessor_name}?xsiType=xnat:imageAssessorData"
+
+# check for existing assessor data (results)
+curl -O -u ${user}:${pwd} "${host}/REST/projects/${project}/subjects/${subject}/experiments/${session}
+/assessors?format=csv"
+
+# check for existing files in assessor data
+curl ${cert_option} -O -u ${user}:${pwd} "${host}/REST/projects/${project}/subjects/${subject}/experiments/${session}
+/assessors/${assessor_name}/files?format=csv"
+
+# delete existing resource files (of assessor data)
+curl -X DELETE -u ${user}:${pwd} "${host}${remote_file_path}"
+
+# upload file to existing assessor
+curl ${cert_option} -X PUT -u ${user}:${pwd} "${host}/REST/projects/${project}/subjects/${subject}/experiments/${session}
+/assessors/${assessor_name}/resources/DICOM/files/${file_name}
+?format=OTHER&content=T1_RAW&inbody=true" --data-binary @"${local_file_path}"
+
+\end{verbatim}
+\end{mylisting}
